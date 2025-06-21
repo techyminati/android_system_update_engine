@@ -311,7 +311,7 @@ bool UpdateAttempterAndroid::ApplyPayload(
     }
   }
   install_plan_.source_slot = GetCurrentSlot();
-  install_plan_.target_slot = GetTargetSlot();
+  install_plan_.target_slot = GetCurrentSlot();
 
   install_plan_.powerwash_required =
       GetHeaderAsBool(headers[kPayloadPropertyPowerwash], false);
@@ -324,14 +324,12 @@ bool UpdateAttempterAndroid::ApplyPayload(
         GetHeaderAsBool(headers[kPayloadDisableVABC], false);
   }
 
-  install_plan_.switch_slot_on_reboot =
-      GetHeaderAsBool(headers[kPayloadPropertySwitchSlotOnReboot], true);
+  install_plan_.switch_slot_on_reboot = false;
 
-  install_plan_.run_post_install =
-      GetHeaderAsBool(headers[kPayloadPropertyRunPostInstall], true);
+  install_plan_.run_post_install = false;
 
   // Skip writing verity if we're resuming and verity has already been written.
-  install_plan_.write_verity = true;
+  install_plan_.write_verity = false;
   if (install_plan_.is_resume && prefs_->Exists(kPrefsVerityWritten)) {
     bool verity_written = false;
     if (prefs_->GetBoolean(kPrefsVerityWritten, &verity_written) &&
@@ -1351,7 +1349,7 @@ bool UpdateAttempterAndroid::setShouldSwitchSlotOnReboot(
 
   InstallPlan install_plan_;
   install_plan_.source_slot = GetCurrentSlot();
-  install_plan_.target_slot = GetTargetSlot();
+  install_plan_.target_slot = GetCurrentSlot();
   // Don't do verity computation, just hash the partitions
   install_plan_.write_verity = false;
   // Don't run postinstall, we just need PostinstallAction to switch the slots.
